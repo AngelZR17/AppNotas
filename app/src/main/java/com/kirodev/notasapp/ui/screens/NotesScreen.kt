@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DeleteOutline
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.RestoreFromTrash
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -29,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,12 +42,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kirodev.notasapp.NotesViewModel
+import com.kirodev.notasapp.data.Notes
 import com.kirodev.notasapp.navigation.AppScreens
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NotesScreen(ctx: Context, navController: NavController) {
+fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context, navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -50,7 +57,6 @@ fun NotesScreen(ctx: Context, navController: NavController) {
                 title = { Text("Notas", color = MaterialTheme.colorScheme.onSecondary) },
             )
         },
-
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -66,49 +72,69 @@ fun NotesScreen(ctx: Context, navController: NavController) {
         },
         content = { paddingValues ->
             Box(modifier = Modifier.padding(paddingValues)) {
-                LazyColumn(
-                    modifier = Modifier.padding(top = 12.dp)
-                ) {
-                    item {
-                        Card(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 8.dp)
-                                .clickable {
-                                    println("Diste click prro :v")
-                                }
-                        ) {
-                            Row(
+                if(notes.isNotEmpty()){
+                    LazyColumn(){
+                        itemsIndexed(notes){index, note ->
+                            Card(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                                    .sizeIn(minHeight = 72.dp)
+                                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                                    .clickable { }
                             ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = "Titulo nota",
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1,
-                                        style = MaterialTheme.typography.displaySmall
-                                    )
-                                    Text(
-                                        text = "Descripcion nota jjsijoisjoijiosjisjoijsoia noots ahi jjjjjj",
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 1,
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                    Text(
-                                        text = "16/03/2025",
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                }
-                                Spacer(Modifier.width(16.dp))
-                                Box(
+                                Row(
                                     modifier = Modifier
-                                        .size(72.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
+                                        .fillMaxWidth()
+                                        .padding(20.dp)
+                                ) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = note.title,
+                                            overflow = TextOverflow.Ellipsis,
+                                            maxLines = 1,
+                                            style = MaterialTheme.typography.displaySmall
+                                        )
+                                        Text(
+                                            text = note.note,
+                                            overflow = TextOverflow.Ellipsis,
+                                            maxLines = 1,
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                        Text(
+                                            text = note.dateUpdated,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                    }
+                                    Box(modifier = Modifier.size(72.dp)
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+
+                                            },
+                                            modifier = Modifier
+                                                .align(Alignment.Center)
+                                        ) {
+                                            Icon(
+                                                Icons.Filled.Delete,
+                                                contentDescription = "Borrar",
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier.size(40.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
+                    }
+                }else{
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "No hay ninguna nota agregada",
+                            style = MaterialTheme.typography.titleLarge,
+                            //textAlign = TextAlign.Center
+                        )
                     }
                 }
             }

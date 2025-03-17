@@ -2,6 +2,8 @@ package com.kirodev.notasapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -36,11 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kirodev.notasapp.NotesViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteScreen(ctx: Context, navController: NavController){
+fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: NavController){
     val currentTitle = rememberSaveable { mutableStateOf("") }
     val currentDescription = rememberSaveable { mutableStateOf("") }
     Box(modifier = Modifier.fillMaxSize()){
@@ -70,13 +74,19 @@ fun AddNoteScreen(ctx: Context, navController: NavController){
                         },
                         Modifier.windowInsetsPadding(WindowInsets.ime),
                         floatingActionButton = {
-                            FloatingActionButton(
-                                onClick = {
-                                    navController.popBackStack()
-                                },
-                                containerColor = MaterialTheme.colorScheme.secondaryContainer
-                            ) {
-                                Icon(Icons.Default.Save, contentDescription = "Guardar", tint = MaterialTheme.colorScheme.onSecondary)
+                            if(currentTitle.value.isNotBlank()){
+                                FloatingActionButton(
+                                    onClick = {
+                                        notesViewModel.createNote(
+                                            currentTitle.value,
+                                            currentDescription.value.ifEmpty { "Sin descripción" } ?: "Sin descripción"
+                                        )
+                                        navController.popBackStack()
+                                    },
+                                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                                ) {
+                                    Icon(Icons.Default.Save, contentDescription = "Guardar", tint = MaterialTheme.colorScheme.onSecondary)
+                                }
                             }
                         },
                         containerColor = MaterialTheme.colorScheme.primary

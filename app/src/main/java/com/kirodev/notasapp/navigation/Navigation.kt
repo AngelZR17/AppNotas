@@ -1,20 +1,19 @@
 package com.kirodev.notasapp.navigation
 
 import android.content.Context
-import androidx.compose.animation.AnimatedContentTransitionScope
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideIn
-import androidx.compose.animation.slideOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.kirodev.notasapp.NotesViewModel
 import com.kirodev.notasapp.ui.screens.AddNoteScreen
 import com.kirodev.notasapp.ui.screens.AddTaskScreen
 import com.kirodev.notasapp.ui.screens.FavoritesScreen
@@ -22,8 +21,12 @@ import com.kirodev.notasapp.ui.screens.NotesScreen
 import com.kirodev.notasapp.ui.screens.TaskScreen
 import com.kirodev.notasapp.util.Preferences
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Navigation(ctx:Context) {
+fun Navigation(
+    notesViewModel: NotesViewModel,
+    ctx:Context
+) {
     val navController = rememberNavController()
     LaunchedEffect(true) {
         if (Preferences(ctx).obtenerString("pantalla","").equals("hometasks")) {
@@ -42,7 +45,8 @@ fun Navigation(ctx:Context) {
             fadeOut(animationSpec = tween(durationMillis = 1))
         }) {
         composable(route = AppScreens.NotesScreen.route) {
-            NotesScreen(ctx, navController)
+            val notes by notesViewModel.notes.observeAsState(emptyList())
+            NotesScreen(notes, notesViewModel, ctx, navController)
         }
         composable(route = AppScreens.TasksScreen.route) {
             TaskScreen(ctx, navController)
@@ -51,7 +55,7 @@ fun Navigation(ctx:Context) {
             FavoritesScreen(ctx, navController)
         }
         composable(route = AppScreens.AddNote.route) {
-            AddNoteScreen(ctx, navController)
+            AddNoteScreen(notesViewModel, ctx, navController)
         }
         composable(route = AppScreens.AddTask.route) {
             AddTaskScreen(ctx, navController)
