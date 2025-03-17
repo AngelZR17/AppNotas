@@ -1,4 +1,4 @@
-package com.kirodev.notasapp
+package com.kirodev.notasapp.data
 
 object Constants {
     const val TABLE_NAME = "Notes"

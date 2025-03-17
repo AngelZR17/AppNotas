@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import androidx.room.Room
-import com.kirodev.notasapp.Constants
+import com.kirodev.notasapp.data.Constants
 import com.kirodev.notasapp.data.AppDatabase
 import com.kirodev.notasapp.data.NotesDao
 
