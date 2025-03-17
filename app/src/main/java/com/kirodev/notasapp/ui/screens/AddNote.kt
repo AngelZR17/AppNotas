@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -112,7 +113,7 @@ fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: N
                                 placeholder = { Text("Título") }
                             )
                             TextField(
-                                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).height(200.dp),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp).fillMaxHeight(),
                                 colors = TextFieldDefaults.colors(
                                     focusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                     cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,

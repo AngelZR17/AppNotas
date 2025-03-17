@@ -3,78 +3,32 @@ package com.kirodev.notasapp.ui.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.RestoreFromTrash
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kirodev.notasapp.NotesViewModel
 import com.kirodev.notasapp.data.Notes
 import com.kirodev.notasapp.navigation.AppScreens
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context, navController: NavController) {
-    var eliminarConfirmaciónrequerida by rememberSaveable { mutableStateOf(false) }
+    var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
+    var selectedNote by remember { mutableStateOf<Notes?>(null) }
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -91,184 +45,208 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
-                Icon(Icons.Default.Create, contentDescription = "Agregar", tint = MaterialTheme.colorScheme.onSecondary)
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agregar",
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
             }
         },
         bottomBar = {
             NavBar(ctx = ctx, navController = navController)
-        },
-        content = { paddingValues ->
-            Box(modifier = Modifier.padding(paddingValues)) {
-                if(notes.isNotEmpty()){
-                    LazyColumn(){
-                        itemsIndexed(notes){index, note ->
-                            Card(
-                                modifier = Modifier
-                                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                                    .combinedClickable(
-                                        onClick = {
-                                            println("ajaaay perro")
-                                        },
-                                        onLongClick = {
-                                            showBottomSheet = true
-                                            println("ajaaay perro presionaleeee")
-                                        }
-                                    )
-                            ) {
-                                if (showBottomSheet) {
-                                    ModalBottomSheet(
-                                        modifier = Modifier,
-                                        onDismissRequest = {
-                                            showBottomSheet = false
-                                        },
-                                        sheetState = sheetState
-                                    ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 15.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
-                                        ) {
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            if (notes.isNotEmpty()) {
+                LazyColumn {
+                    items(notes, key = { it.id!! }) { note ->
+                        NoteCard(
+                            note = note,
+                            onNoteClick = {
 
-                                            Button(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
-                                                onClick = {  }
-                                            ) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Create,
-                                                        contentDescription = "Icono de editar",
-                                                        modifier = Modifier.padding(end = 10.dp)
-                                                    )
-                                                    Text(text = "Editar nota")
-                                                }
-                                            }
-                                            Button(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
-                                                onClick = {  }
-                                            ) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Star,
-                                                        contentDescription = "Icono de favorito",
-                                                        modifier = Modifier.padding(end = 10.dp)
-                                                    )
-                                                    Text(text = "Favorito")
-                                                }
-                                            }
-                                            Button(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
-                                                onClick = {  }
-                                            ) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Share,
-                                                        contentDescription = "Icono de compartir",
-                                                        modifier = Modifier.padding(end = 10.dp)
-                                                    )
-                                                    Text(text = "Compartir")
-                                                }
-                                            }
-                                            Button(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
-                                                onClick = { eliminarConfirmaciónrequerida = true }
-                                            ) {
-                                                Row(
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Filled.Delete,
-                                                        contentDescription = "Icono de editar",
-                                                        modifier = Modifier.padding(end = 10.dp)
-                                                    )
-                                                    Text(text = "Eliminar nota")
-                                                }
-                                            }
-                                            if (eliminarConfirmaciónrequerida) {
-                                                mostrarDialogoEliminacion(
-                                                    confirmarEliminacion = {
-                                                        eliminarConfirmaciónrequerida = false
-                                                        notesViewModel.deleteNotes(note)
-                                                    },
-                                                    cancelarEliminacion = {
-                                                        eliminarConfirmaciónrequerida = false
-                                                    },
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(20.dp)
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = note.title,
-                                            overflow = TextOverflow.Ellipsis,
-                                            maxLines = 1,
-                                            style = MaterialTheme.typography.displaySmall
-                                        )
-                                        Text(
-                                            text = note.note,
-                                            overflow = TextOverflow.Ellipsis,
-                                            maxLines = 1,
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                        Text(
-                                            text = note.dateUpdated,
-                                            style = MaterialTheme.typography.bodyMedium
-                                        )
-                                    }
-
-                                }
+                            },
+                            onNoteLongClick = {
+                                selectedNote = note
+                                showBottomSheet = true
                             }
-                        }
-                    }
-                }else{
-                    Column(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = "No hay ninguna nota agregada",
-                            style = MaterialTheme.typography.titleLarge
                         )
                     }
                 }
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Description,
+                        contentDescription = "Icono de eliminar",
+                        modifier = Modifier.padding(bottom = 15.dp).size(size = 40.dp)
+                    )
+                    Text(
+                        text = "No hay notas aún",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
             }
         }
-    )
+    }
+    if (selectedNote != null && showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            BottomSheetContent(
+                onEditClick = {
+                    selectedNote?.let { note ->
+
+                    }
+                    showBottomSheet = false
+                },
+                onDeleteClick = {
+                    showDeleteConfirmation = true
+                    showBottomSheet = false
+                },
+                onShareClick = {
+                    showBottomSheet = false
+                }
+            )
+        }
+    }
+    if (showDeleteConfirmation) {
+        ShowDeleteDialog(
+            onConfirm = {
+                selectedNote?.let { notesViewModel.deleteNotes(it) }
+                showDeleteConfirmation = false
+            },
+            onCancel = { showDeleteConfirmation = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun NoteCard(
+    note: Notes,
+    onNoteClick: () -> Unit,
+    onNoteLongClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .combinedClickable(
+                onClick = onNoteClick,
+                onLongClick = onNoteLongClick
+            ),
+        shape = RoundedCornerShape(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = note.title,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.displaySmall
+                )
+                Text(
+                    text = note.note,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = note.dateUpdated,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
 }
 
 @Composable
-private fun mostrarDialogoEliminacion(
-    confirmarEliminacion: () -> Unit,
-    cancelarEliminacion: () -> Unit,
+private fun BottomSheetContent(
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onShareClick: () -> Unit
 ) {
-    AlertDialog(onDismissRequest = {  },
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
+            onClick = onEditClick
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Create,
+                    contentDescription = "Icono de editar",
+                    modifier = Modifier.padding(end = 10.dp)
+                )
+                Text(text = "Editar nota")
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
+            onClick = onShareClick
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Share,
+                    contentDescription = "Icono de compartir",
+                    modifier = Modifier.padding(end = 10.dp)
+                )
+                Text(text = "Compartir")
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onError),
+            onClick = onDeleteClick
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Icono de eliminar",
+                    modifier = Modifier.padding(end = 10.dp)
+                )
+                Text(text = "Eliminar nota")
+            }
+        }
+    }
+}
+
+@Composable
+private fun ShowDeleteDialog(
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
         containerColor = MaterialTheme.colorScheme.background,
         title = { Text("Confirmar eliminación") },
         text = { Text("¿Estás seguro de que deseas eliminar esta nota?") },
         dismissButton = {
-            TextButton(onClick = cancelarEliminacion) {
+            TextButton(onClick = onCancel) {
                 Text(text = "Cancelar", color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         },
         confirmButton = {
-            TextButton(onClick = confirmarEliminacion) {
-                Text(text = "Si, eliminar", color = MaterialTheme.colorScheme.onTertiaryContainer)
+            TextButton(onClick = onConfirm) {
+                Text(text = "Sí, eliminar", color = MaterialTheme.colorScheme.onTertiaryContainer)
             }
         }
     )
