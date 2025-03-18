@@ -3,6 +3,7 @@ package com.kirodev.notasapp
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -16,6 +17,12 @@ class NotesViewModel(
 ) : ViewModel() {
 
     val notes: LiveData<List<Notes>> = db.getNotes()
+    private val _selectedNote = MutableLiveData<Notes?>(null)
+    val selectedNote: LiveData<Notes?> get() = _selectedNote
+
+    fun setSelectedNote(note: Notes?) {
+        _selectedNote.value = note
+    }
 
     fun deleteNotes(note: Notes) {
         viewModelScope.launch(Dispatchers.IO){

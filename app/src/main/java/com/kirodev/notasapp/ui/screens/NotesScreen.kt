@@ -106,7 +106,8 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                         NoteCard(
                             note = note,
                             onNoteClick = {
-
+                                notesViewModel.setSelectedNote(note)
+                                navController.navigate(AppScreens.EditNote.route)
                             },
                             onNoteLongClick = {
                                 selectedNote = note
@@ -144,6 +145,7 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
             BottomSheetContent(
                 onEditClick = {
                     selectedNote?.let { note ->
+                        notesViewModel.setSelectedNote(note)
                         navController.navigate(AppScreens.EditNote.route)
                     }
                     showBottomSheet = false

@@ -33,22 +33,35 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kirodev.notasapp.NotesViewModel
+import com.kirodev.notasapp.data.fechaHoraActual
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: NavController){
-    val currentTitle = rememberSaveable { mutableStateOf("") }
-    val currentDescription = rememberSaveable { mutableStateOf("") }
+    val selectedNote by notesViewModel.selectedNote.observeAsState()
+    var title by remember { mutableStateOf(selectedNote?.title ?: "") }
+    var content by remember { mutableStateOf(selectedNote?.note ?: "") }
+
+    LaunchedEffect(selectedNote) {
+        title = selectedNote?.title ?: ""
+        content = selectedNote?.note ?: ""
+    }
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
             Scaffold(
@@ -85,18 +98,26 @@ fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: 
                         },
                         Modifier.windowInsetsPadding(WindowInsets.ime),
                         floatingActionButton = {
-                            if(currentTitle.value.isNotBlank()){
+                            if(title.isNotBlank()) {
                                 FloatingActionButton(
                                     onClick = {
-                                        notesViewModel.createNote(
-                                            currentTitle.value,
-                                            currentDescription.value.ifEmpty { "Sin descripción" } ?: "Sin descripción"
+                                        val updatedNote = selectedNote?.copy(
+                                            title = title,
+                                            note = content,
+                                            dateUpdated = fechaHoraActual()
                                         )
+                                        if (updatedNote != null) {
+                                            notesViewModel.updateNote(updatedNote)
+                                        }
                                         navController.popBackStack()
                                     },
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer
                                 ) {
-                                    Icon(Icons.Default.Save, contentDescription = "Guardar", tint = MaterialTheme.colorScheme.onSecondary)
+                                    Icon(
+                                        Icons.Default.Save,
+                                        contentDescription = "Guardar",
+                                        tint = MaterialTheme.colorScheme.onSecondary
+                                    )
                                 }
                             }
                         },
@@ -116,10 +137,8 @@ fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: 
                                     unfocusedIndicatorColor = Color.Transparent,
                                     focusedIndicatorColor = Color.Transparent
                                 ),
-                                value = currentTitle.value,
-                                onValueChange = { value ->
-                                    currentTitle.value = value
-                                },
+                                value = title,
+                                onValueChange = { title = it },
                                 placeholder = { Text("Título") }
                             )
                             TextField(
@@ -132,10 +151,8 @@ fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: 
                                     unfocusedIndicatorColor = Color.Transparent,
                                     focusedIndicatorColor = Color.Transparent
                                 ),
-                                value = currentDescription.value,
-                                onValueChange = { value ->
-                                    currentDescription.value = value
-                                },
+                                value = content,
+                                onValueChange = { content = it },
                                 placeholder = { Text("Descripción") }
                             )
                         }
