@@ -46,7 +46,7 @@ import com.kirodev.notasapp.NotesViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: NavController){
+fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: NavController){
     val currentTitle = rememberSaveable { mutableStateOf("") }
     val currentDescription = rememberSaveable { mutableStateOf("") }
     Box(modifier = Modifier.fillMaxSize()){
@@ -55,7 +55,7 @@ fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: N
                 topBar = {
                     TopAppBar(
                         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                        title = { Text("Agregar Nota", color = MaterialTheme.colorScheme.onSecondary) },
+                        title = { Text("Editar Nota", color = MaterialTheme.colorScheme.onSecondary) },
                         navigationIcon = {
                             IconButton(
                                 onClick = {

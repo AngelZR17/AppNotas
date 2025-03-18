@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -40,7 +41,7 @@ fun TaskScreen(ctx: Context, navController: NavController){
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
-                Icon(Icons.Default.Create, contentDescription = "Agregar", tint = MaterialTheme.colorScheme.onSecondary)
+                Icon(Icons.Default.Add, contentDescription = "Agregar", tint = MaterialTheme.colorScheme.onSecondary)
             }
         },
         bottomBar = {

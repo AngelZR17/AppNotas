@@ -9,12 +9,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Help
+import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -30,12 +35,50 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
     var selectedNote by remember { mutableStateOf<Notes?>(null) }
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
                 title = { Text("Notas", color = MaterialTheme.colorScheme.onSecondary) },
+                actions = {
+                    IconButton(
+                        onClick = { expanded = !expanded }
+                    ) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "Opciones",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Configuración") },
+                            leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                            onClick = { navController.navigate(AppScreens.Settings.route) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Option 2") },
+                            onClick = { /* Do something... */ }
+                        )
+                        HorizontalDivider()
+                        DropdownMenuItem(
+                            text = { Text("About") },
+                            leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
+                            onClick = { /* Do something... */ }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Help") },
+                            leadingIcon = { Icon(Icons.AutoMirrored.Outlined.Help, contentDescription = null) },
+                            trailingIcon = { Icon(Icons.AutoMirrored.Outlined.OpenInNew, contentDescription = null) },
+                            onClick = { /* Do something... */ }
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {
@@ -101,7 +144,7 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
             BottomSheetContent(
                 onEditClick = {
                     selectedNote?.let { note ->
-
+                        navController.navigate(AppScreens.EditNote.route)
                     }
                     showBottomSheet = false
                 },
@@ -179,7 +222,8 @@ private fun BottomSheetContent(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 15.dp),
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
