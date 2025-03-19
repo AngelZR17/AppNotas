@@ -30,4 +30,14 @@ class Preferences(context: Context) {
         return sharedPreferences.getString(clave, valorPorDefecto)
     }
 
+    fun guardarBoolean(clave: String, valor: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(clave, valor)
+        editor.apply()
+    }
+
+    fun obtenerBoolean(clave: String, valorPorDefecto: Boolean): Boolean {
+        return sharedPreferences.getBoolean(clave, valorPorDefecto)
+    }
+
 }
