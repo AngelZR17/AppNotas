@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.AttachFile
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Save
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -87,13 +90,16 @@ fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: 
                                 Icon(Icons.Filled.AttachFile, contentDescription = "Localized description")
                             }
                             IconButton(onClick = { /* TODO */ }) {
+                                Icon(Icons.Filled.Camera, contentDescription = "Localized description")
+                            }
+                            IconButton(onClick = { /* TODO */ }) {
                                 Icon(Icons.Filled.Mic, contentDescription = "Localized description")
                             }
                             IconButton(onClick = { /* TODO */ }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Localized description")
+                                Icon(Icons.Filled.Videocam, contentDescription = "Localized description")
                             }
                             IconButton(onClick = { /* TODO */ }) {
-                                Icon(Icons.Filled.Menu, contentDescription = "Localized description")
+                                Icon(Icons.Filled.Palette, contentDescription = "Localized description")
                             }
                         },
                         Modifier.windowInsetsPadding(WindowInsets.ime),

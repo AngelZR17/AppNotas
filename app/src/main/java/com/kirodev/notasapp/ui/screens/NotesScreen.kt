@@ -127,7 +127,7 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Description,
-                        contentDescription = "Icono de eliminar",
+                        contentDescription = "Icono de notas",
                         modifier = Modifier.padding(bottom = 15.dp).size(size = 40.dp)
                     )
                     Text(
@@ -285,6 +285,14 @@ private fun ShowDeleteDialog(
     onCancel: () -> Unit
 ) {
     AlertDialog(
+        icon = {
+            Icon(
+                Icons.Default.Warning,
+                modifier = Modifier.size(35.dp),
+                contentDescription = "Example Icon",
+                tint = MaterialTheme.colorScheme.onSecondary
+            )
+        },
         onDismissRequest = onCancel,
         containerColor = MaterialTheme.colorScheme.background,
         title = { Text("Confirmar eliminación") },

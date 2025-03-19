@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kirodev.notasapp.TaskViewModel
 import com.kirodev.notasapp.data.Tasks
+import com.kirodev.notasapp.data.fechaHoraActual
 import com.kirodev.notasapp.navigation.AppScreens
 import java.nio.file.WatchEvent
 
@@ -40,6 +41,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
     var selectedTask by remember { mutableStateOf<Tasks?>(null) }
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showOptionsBottomSheet by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
 
 
@@ -47,7 +49,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                title = { Text("Notas", color = MaterialTheme.colorScheme.onSecondary) },
+                title = { Text("Tareas", color = MaterialTheme.colorScheme.onSecondary) },
                 actions = {
                     IconButton(
                         onClick = { expanded = !expanded }
@@ -105,7 +107,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    showBottomSheet = true
+                    navController.navigate(AppScreens.AddTask.route)
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
@@ -128,6 +130,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
                             task = task,
                             onTaskClick = {
                                 taskViewModel.setSelectedTask(task)
+                                navController.navigate(AppScreens.EditTask.route)
                             },
                             onTaskLongClick = {
                                 selectedTask = task
@@ -147,9 +150,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
                     Icon(
                         imageVector = Icons.Filled.Task,
                         contentDescription = "Icono de tareas",
-                        modifier = Modifier
-                            .padding(bottom = 15.dp)
-                            .size(size = 40.dp)
+                        modifier = Modifier.padding(bottom = 15.dp).size(size = 40.dp)
                     )
                     Text(
                         text = "No hay tareas aún",
@@ -159,18 +160,34 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
             }
         }
     }
-    if (showBottomSheet) {
+    if (selectedTask != null && showBottomSheet) {
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
             BottomSheetContent(
-                onAddClick = { title ->
-                    taskViewModel.createTask(title) // Pass the title to the ViewModel
-                    showBottomSheet = false // Dismiss the bottom sheet
+                onEditClick = {
+                    selectedTask?.let { note ->
+                        taskViewModel.setSelectedTask(note)
+                        navController.navigate(AppScreens.EditTask.route)
+                    }
+                    showBottomSheet = false
                 },
+                onDeleteClick = {
+                    showDeleteConfirmation = true
+                    showBottomSheet = false
+                }
             )
         }
+    }
+    if (showDeleteConfirmation) {
+        ShowDeleteDialog(
+            onConfirm = {
+                selectedTask?.let { taskViewModel.deleteTask(it) }
+                showDeleteConfirmation = false
+            },
+            onCancel = { showDeleteConfirmation = false }
+        )
     }
 }
 
@@ -204,6 +221,12 @@ private fun TaskCard(
                     maxLines = 1,
                     style = MaterialTheme.typography.displaySmall
                 )
+                Text(
+                    text = task.dateUpdated,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }
@@ -211,44 +234,47 @@ private fun TaskCard(
 
 @Composable
 private fun BottomSheetContent(
-    onAddClick: (String) -> Unit
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
 ) {
-    val currentTitle = rememberSaveable { mutableStateOf("") }
-    Row {
-        TextField(
-            modifier = Modifier.padding(horizontal = 10.dp).width(300.dp),
-            colors = TextFieldDefaults.colors(
-                focusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
-            ),
-            value = currentTitle.value,
-            onValueChange = { value ->
-                currentTitle.value = value
-            },
-            placeholder = { Text("Título") }
-        )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Button(
-            modifier = Modifier.width(90.dp),
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onTertiary),
-            onClick = {
-                onAddClick(currentTitle.value) // Pass the title to the ViewModel
-                currentTitle.value = "" // Clear the input field
-            }
+            onClick = onEditClick
         ) {
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Icono de editar",
-                modifier = Modifier
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Create,
+                    contentDescription = "Icono de editar",
+                    modifier = Modifier.padding(end = 10.dp)
+                )
+                Text(text = "Editar tarea")
+            }
+        }
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onError),
+            onClick = onDeleteClick
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "Icono de eliminar",
+                    modifier = Modifier.padding(end = 10.dp)
+                )
+                Text(text = "Eliminar tarea")
+            }
         }
     }
 }
-
-
 
 @Composable
 private fun ShowDeleteDialog(
@@ -256,10 +282,18 @@ private fun ShowDeleteDialog(
     onCancel: () -> Unit
 ) {
     AlertDialog(
+        icon = {
+            Icon(
+                Icons.Default.Warning,
+                modifier = Modifier.size(35.dp),
+                contentDescription = "Example Icon",
+                tint = MaterialTheme.colorScheme.onSecondary
+            )
+        },
         onDismissRequest = onCancel,
         containerColor = MaterialTheme.colorScheme.background,
         title = { Text("Confirmar eliminación") },
-        text = { Text("¿Estás seguro de que deseas eliminar esta nota?") },
+        text = { Text("¿Estás seguro de que deseas eliminar esta tarea?") },
         dismissButton = {
             TextButton(onClick = onCancel) {
                 Text(text = "Cancelar", color = MaterialTheme.colorScheme.onPrimaryContainer)
@@ -271,14 +305,4 @@ private fun ShowDeleteDialog(
             }
         }
     )
-}
-
-private fun shareContent(ctx: Context, title: String, content: String,){
-    val intent2 = Intent("android.intent.action.SEND").apply {
-        type = "text/plain"
-        putExtra("android.intent.extra.SUBJECT", "Notas")
-        putExtra("android.intent.extra.TEXT", title + "\n\n" + content)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // 268435456 en decimal es FLAG_ACTIVITY_NEW_TASK
-    }
-    ctx.startActivity(intent2)
 }

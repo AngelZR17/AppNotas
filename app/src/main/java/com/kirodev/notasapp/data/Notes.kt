@@ -14,7 +14,7 @@ data class Notes @RequiresApi(Build.VERSION_CODES.O) constructor(
     @PrimaryKey(autoGenerate = true)    val id: Int? = null,
     @ColumnInfo(name = "title")         val title: String,
     @ColumnInfo(name = "note")          val note: String,
-    @ColumnInfo(name = "dateUpdated")   val dateUpdated: String = fechaHoraActual(),
+    @ColumnInfo(name = "dateUpdated")   val dateUpdated: String = fechaHoraActual()
 )
 
 fun fechaHoraActual() : String {

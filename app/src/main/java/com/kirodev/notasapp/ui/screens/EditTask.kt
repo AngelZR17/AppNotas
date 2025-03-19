@@ -33,36 +33,49 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kirodev.notasapp.NotesViewModel
 import com.kirodev.notasapp.TaskViewModel
+import com.kirodev.notasapp.data.fechaHoraActual
+import com.kirodev.notasapp.data.fechaHoraActualTask
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskScreen(taskViewModel: TaskViewModel, ctx: Context, navController: NavController){
-    val currentTitle = rememberSaveable { mutableStateOf("") }
-    val currentDescription = rememberSaveable { mutableStateOf("") }
+fun EditTaskScreen(taskViewModel: TaskViewModel, ctx: Context, navController: NavController){
+    val selectedTask by taskViewModel.selectedTask.observeAsState()
+    var title by remember { mutableStateOf(selectedTask?.task ?: "") }
+
+    LaunchedEffect(selectedTask) {
+        title = selectedTask?.task ?: ""
+    }
+
     Box(modifier = Modifier.fillMaxSize()){
         Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
             Scaffold(
                 topBar = {
                     TopAppBar(
                         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primary),
-                        title = { Text("Agregar Tarea", color = MaterialTheme.colorScheme.onSecondary) },
+                        title = { Text("Editar Nota", color = MaterialTheme.colorScheme.onSecondary) },
                         navigationIcon = {
                             IconButton(
                                 onClick = {
                                     navController.popBackStack()
                                 }
                             ) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Botón de Retroceso", tint = MaterialTheme.colorScheme.onSecondary)
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Botón de Retroceso", tint = Color.White)
                             }
                         }
                     )
@@ -74,12 +87,16 @@ fun AddTaskScreen(taskViewModel: TaskViewModel, ctx: Context, navController: Nav
                         },
                         Modifier.windowInsetsPadding(WindowInsets.ime),
                         floatingActionButton = {
-                            if (currentTitle.value.isNotBlank()) {
+                            if(title.isNotBlank()) {
                                 FloatingActionButton(
                                     onClick = {
-                                        taskViewModel.createTask(
-                                            currentTitle.value
+                                        val updatedTask = selectedTask?.copy(
+                                            task = title,
+                                            dateUpdated = fechaHoraActualTask()
                                         )
+                                        if (updatedTask != null) {
+                                            taskViewModel.updateTask(updatedTask)
+                                        }
                                         navController.popBackStack()
                                     },
                                     containerColor = MaterialTheme.colorScheme.secondaryContainer
@@ -108,10 +125,8 @@ fun AddTaskScreen(taskViewModel: TaskViewModel, ctx: Context, navController: Nav
                                     unfocusedIndicatorColor = Color.Transparent,
                                     focusedIndicatorColor = Color.Transparent
                                 ),
-                                value = currentTitle.value,
-                                onValueChange = { value ->
-                                    currentTitle.value = value
-                                },
+                                value = title,
+                                onValueChange = { title = it },
                                 placeholder = { Text("Título") }
                             )
                         }

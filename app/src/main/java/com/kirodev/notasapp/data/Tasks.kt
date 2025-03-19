@@ -13,4 +13,11 @@ import java.util.Date
 data class Tasks @RequiresApi(Build.VERSION_CODES.O) constructor(
     @PrimaryKey(autoGenerate = true)    val id: Int? = null,
     @ColumnInfo(name = "task")          val task: String,
+    @ColumnInfo(name = "dateUpdated")   val dateUpdated: String = fechaHoraActualTask()
 )
+
+fun fechaHoraActualTask() : String {
+    val date = Date()
+    val sdf = SimpleDateFormat("dd/MMMM/yyyy hh:mm a")
+    return sdf.format(date)
+}
