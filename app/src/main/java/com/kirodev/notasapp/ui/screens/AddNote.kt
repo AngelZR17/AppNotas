@@ -90,7 +90,7 @@ fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: N
                                     onClick = {
                                         notesViewModel.createNote(
                                             currentTitle.value,
-                                            currentDescription.value.ifEmpty { "Sin descripción" } ?: "Sin descripción"
+                                            currentDescription.value
                                         )
                                         navController.popBackStack()
                                     },

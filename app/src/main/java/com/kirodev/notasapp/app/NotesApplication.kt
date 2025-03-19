@@ -1,12 +1,11 @@
 package com.kirodev.notasapp.app
 
 import android.app.Application
-import android.content.Intent
-import android.net.Uri
 import androidx.room.Room
 import com.kirodev.notasapp.data.Constants
 import com.kirodev.notasapp.data.AppDatabase
 import com.kirodev.notasapp.data.NotesDao
+import com.kirodev.notasapp.data.TasksDao
 
 class NotesApplication : Application(){
     private var db : AppDatabase? = null
@@ -33,6 +32,10 @@ class NotesApplication : Application(){
 
         fun getDao(): NotesDao {
             return instance!!.getDb().NotesDao()
+        }
+
+        fun getDaoTask(): TasksDao {
+            return instance!!.getDb().TasksDao()
         }
     }
 }

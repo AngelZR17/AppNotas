@@ -2,6 +2,7 @@ package com.kirodev.notasapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
@@ -155,6 +156,9 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                     showBottomSheet = false
                 },
                 onShareClick = {
+                    selectedNote?.let { note ->
+                        shareContent(ctx, note.title, note.note)
+                    }
                     showBottomSheet = false
                 }
             )
@@ -201,7 +205,7 @@ private fun NoteCard(
                     style = MaterialTheme.typography.displaySmall
                 )
                 Text(
-                    text = note.note,
+                    text = note.note.ifEmpty { "Sin texto" } ?: "Sin texto",
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodyLarge
@@ -296,4 +300,14 @@ private fun ShowDeleteDialog(
             }
         }
     )
+}
+
+private fun shareContent(ctx: Context, title: String, content: String,){
+    val intent2 = Intent("android.intent.action.SEND").apply {
+        type = "text/plain"
+        putExtra("android.intent.extra.SUBJECT", "Notas")
+        putExtra("android.intent.extra.TEXT", title + "\n\n" + content)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // 268435456 en decimal es FLAG_ACTIVITY_NEW_TASK
+    }
+    ctx.startActivity(intent2)
 }

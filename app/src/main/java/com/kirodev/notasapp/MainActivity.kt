@@ -15,18 +15,20 @@ import com.kirodev.notasapp.ui.theme.NotasAppTheme
 
 class MainActivity : ComponentActivity() {
     private lateinit var notesViewModel : NotesViewModel
+    private lateinit var taskViewModel : TaskViewModel
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         notesViewModel =  NotesViewModelFactory(NotesApplication.getDao()).create(NotesViewModel::class.java)
+        taskViewModel =  TaskViewModelFactory(NotesApplication.getDaoTask()).create(TaskViewModel::class.java)
 
         enableEdgeToEdge()
         setContent {
             NotasAppTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val ctx = applicationContext
-                    Navigation(notesViewModel,ctx)
+                    Navigation(taskViewModel,notesViewModel,ctx)
                 }
             }
         }

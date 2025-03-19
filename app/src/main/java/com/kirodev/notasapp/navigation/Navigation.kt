@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kirodev.notasapp.NotesViewModel
+import com.kirodev.notasapp.TaskViewModel
 import com.kirodev.notasapp.ui.screens.AddNoteScreen
 import com.kirodev.notasapp.ui.screens.AddTaskScreen
 import com.kirodev.notasapp.ui.screens.EditNoteScreen
@@ -26,6 +27,7 @@ import com.kirodev.notasapp.util.Preferences
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Navigation(
+    taskViewModel: TaskViewModel,
     notesViewModel: NotesViewModel,
     ctx:Context
 ) {
@@ -51,7 +53,8 @@ fun Navigation(
             NotesScreen(notes, notesViewModel, ctx, navController)
         }
         composable(route = AppScreens.TasksScreen.route) {
-            TaskScreen(ctx, navController)
+            val tasks by taskViewModel.tasks.observeAsState(emptyList())
+            TaskScreen(tasks, taskViewModel, ctx, navController)
         }
         composable(route = AppScreens.FavoritesScreen.route) {
             FavoritesScreen(ctx, navController)
