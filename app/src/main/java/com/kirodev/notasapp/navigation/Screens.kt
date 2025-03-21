@@ -6,7 +6,5 @@ sealed class AppScreens (val route: String){
     object FavoritesScreen: AppScreens("homefavorites")
     object AddNote: AppScreens("addnote")
     object EditNote: AppScreens("editnote")
-    object AddTask: AppScreens("addtask")
-    object EditTask: AppScreens("edittask")
     object Settings: AppScreens("settings")
 }

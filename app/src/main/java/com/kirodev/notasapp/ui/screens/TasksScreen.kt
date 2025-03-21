@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.kirodev.notasapp.TaskViewModel
 import com.kirodev.notasapp.data.Tasks
 import com.kirodev.notasapp.data.fechaHoraActual
+import com.kirodev.notasapp.data.fechaHoraActualTask
 import com.kirodev.notasapp.navigation.AppScreens
 import java.nio.file.WatchEvent
 
@@ -41,9 +42,10 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
     var selectedTask by remember { mutableStateOf<Tasks?>(null) }
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
-    var showOptionsBottomSheet by remember { mutableStateOf(false) }
+    var showTaskBottomSheet by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
-
+    var currentTitle by remember { mutableStateOf("") }
+    var isEditing by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -107,7 +109,7 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(AppScreens.AddTask.route)
+                    showTaskBottomSheet = true
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
@@ -129,8 +131,10 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
                         TaskCard(
                             task = task,
                             onTaskClick = {
-                                taskViewModel.setSelectedTask(task)
-                                navController.navigate(AppScreens.EditTask.route)
+                                selectedTask = task
+                                currentTitle = task.task
+                                isEditing = true
+                                showTaskBottomSheet = true
                             },
                             onTaskLongClick = {
                                 selectedTask = task
@@ -167,9 +171,10 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
         ) {
             BottomSheetContent(
                 onEditClick = {
-                    selectedTask?.let { note ->
-                        taskViewModel.setSelectedTask(note)
-                        navController.navigate(AppScreens.EditTask.route)
+                    selectedTask?.let { task ->
+                        currentTitle = task.task
+                        isEditing = true
+                        showTaskBottomSheet = true
                     }
                     showBottomSheet = false
                 },
@@ -180,6 +185,34 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
             )
         }
     }
+
+    if (showTaskBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showTaskBottomSheet = false },
+            sheetState = sheetState
+        ) {
+            TaskBottomSheetContent(
+                currentTitle = currentTitle,
+                onTitleChange = { newTitle ->
+                    currentTitle = newTitle
+                },
+                onAddClick = {
+                    if (isEditing) {
+                        selectedTask?.let { task ->
+                            val updatedTask = task.copy(task = currentTitle, dateUpdated = fechaHoraActualTask())
+                            taskViewModel.updateTask(updatedTask)
+                        }
+                    } else {
+                        taskViewModel.createTask(currentTitle)
+                    }
+                    showTaskBottomSheet = false
+                    currentTitle = ""
+                    isEditing = false
+                }
+            )
+        }
+    }
+
     if (showDeleteConfirmation) {
         ShowDeleteDialog(
             onConfirm = {
@@ -226,6 +259,56 @@ private fun TaskCard(
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                     style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TaskBottomSheetContent(
+    currentTitle: String,
+    onTitleChange: (String) -> Unit,
+    onAddClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .padding(bottom = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row {
+            TextField(
+                modifier = Modifier
+                    .height(100.dp)
+                    .width(400.dp)
+                    .padding(bottom = 10.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent
+                ),
+                value = currentTitle,
+                onValueChange = { value ->
+                    onTitleChange(value)
+                },
+                placeholder = { Text("Título") }
+            )
+        }
+        Button(
+            modifier = Modifier.padding(start = 300.dp),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondaryContainer),
+            onClick = onAddClick
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Icono de agregar",
+                    modifier = Modifier.padding(end = 10.dp)
                 )
             }
         }
