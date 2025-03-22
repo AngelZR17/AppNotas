@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Help
@@ -110,6 +112,8 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
             FloatingActionButton(
                 onClick = {
                     showTaskBottomSheet = true
+                    currentTitle = ""
+                    isEditing = false
                 },
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             ) {
@@ -188,15 +192,19 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
 
     if (showTaskBottomSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showTaskBottomSheet = false },
-            sheetState = sheetState
+            onDismissRequest = {
+                showTaskBottomSheet = false
+                currentTitle = ""
+                isEditing = false
+            },
+            sheetState = sheetState,
         ) {
             TaskBottomSheetContent(
                 currentTitle = currentTitle,
                 onTitleChange = { newTitle ->
                     currentTitle = newTitle
                 },
-                onAddClick = {
+                onActionClick = {
                     if (isEditing) {
                         selectedTask?.let { task ->
                             val updatedTask = task.copy(task = currentTitle, dateUpdated = fechaHoraActualTask())
@@ -208,7 +216,9 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
                     showTaskBottomSheet = false
                     currentTitle = ""
                     isEditing = false
-                }
+                },
+                onReminderClick = { },
+                isEditing = isEditing
             )
         }
     }
@@ -223,7 +233,6 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
         )
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -251,8 +260,8 @@ private fun TaskCard(
                 Text(
                     text = task.task,
                     overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                    style = MaterialTheme.typography.displaySmall
+                    maxLines = 3,
+                    style = MaterialTheme.typography.titleLarge
                 )
                 Text(
                     text = task.dateUpdated,
@@ -269,7 +278,9 @@ private fun TaskCard(
 private fun TaskBottomSheetContent(
     currentTitle: String,
     onTitleChange: (String) -> Unit,
-    onAddClick: () -> Unit
+    onActionClick: () -> Unit,
+    onReminderClick: () -> Unit,
+    isEditing: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -278,39 +289,64 @@ private fun TaskBottomSheetContent(
             .padding(bottom = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row {
-            TextField(
-                modifier = Modifier
-                    .height(100.dp)
-                    .width(400.dp)
-                    .padding(bottom = 10.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent
-                ),
-                value = currentTitle,
-                onValueChange = { value ->
-                    onTitleChange(value)
-                },
-                placeholder = { Text("Título") }
+        Text(
+            text = if (isEditing) "Editar Tarea" else "Agregar Tarea",
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(bottom = 20.dp)
+        )
+        TextField(
+            modifier = Modifier
+                .height(100.dp)
+                .width(400.dp)
+                .padding(bottom = 10.dp),
+            colors = TextFieldDefaults.colors(
+                focusedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                cursorColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent
+            ),
+            value = currentTitle,
+            onValueChange = { value ->
+                onTitleChange(value)
+            },
+            placeholder = { Text("Título") }
+        )
+    }
+    Row(
+        modifier = Modifier.padding(bottom = 10.dp, start = 35.dp)
+    ) {
+        Button(
+            modifier = Modifier.padding(),
+            onClick = onReminderClick,
+            colors = ButtonDefaults.buttonColors( MaterialTheme.colorScheme.secondaryContainer)
+        ) {
+            Icon(
+                modifier = Modifier.padding(end = 10.dp),
+                imageVector = Icons.Filled.Notifications,
+                contentDescription = "Icono de recordatorio",
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
             )
+            Text("Recordatorio")
         }
         Button(
-            modifier = Modifier.padding(start = 300.dp),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.secondaryContainer),
-            onClick = onAddClick
+            modifier = Modifier.padding(start = 10.dp),
+            onClick = onActionClick,
+            enabled = currentTitle.isNotBlank(),
+            colors = ButtonDefaults.buttonColors( MaterialTheme.colorScheme.secondaryContainer)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Icono de agregar",
-                    modifier = Modifier.padding(end = 10.dp)
-                )
-            }
+            Icon(
+                imageVector = Icons.Filled.Check,
+                contentDescription = "Icono de agregar",
+                modifier = Modifier.padding(end = 10.dp),
+                tint = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+            Text(
+                text = if (isEditing) "Editar Tarea" else "Agregar Tarea",
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+            )
         }
     }
 }
