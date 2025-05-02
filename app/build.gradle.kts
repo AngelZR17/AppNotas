@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.coil.compose)
     ksp(libs.androidx.room.compiler) // Usa ksp en lugar de kapt
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.core.ktx)

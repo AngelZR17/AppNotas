@@ -37,9 +37,9 @@ class NotesViewModel(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun createNote(title: String, note: String) {
+    fun createNote(title: String, note: String, media: String? = null) {
         viewModelScope.launch(Dispatchers.IO){
-            db.insertNote(Notes(title = title, note = note))
+            db.insertNote(Notes(title = title, note = note, uris = media))
         }
     }
 
