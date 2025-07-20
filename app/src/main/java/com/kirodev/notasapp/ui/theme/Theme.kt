@@ -9,7 +9,11 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.kirodev.notasapp.LocalDarkMode
 import com.kirodev.notasapp.util.Preferences
 
 private val DarkColorScheme = darkColorScheme(
@@ -62,14 +66,16 @@ fun NotasAppTheme(
 //      else -> LightColorScheme
 //    }
     val context = LocalContext.current
-    var colorScheme = LightColorScheme
-    if (Preferences(context).obtenerBoolean("dark", false)){
-         colorScheme = DarkColorScheme
-    }
+    val darkModeState =
+        remember { mutableStateOf(Preferences(context).obtenerBoolean("dark", false)) }
 
-    MaterialTheme(
-      colorScheme = colorScheme,
-      typography = Typography,
-      content = content
-    )
+    val colorScheme = if (darkModeState.value) DarkColorScheme else LightColorScheme
+
+    CompositionLocalProvider(LocalDarkMode provides darkModeState) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

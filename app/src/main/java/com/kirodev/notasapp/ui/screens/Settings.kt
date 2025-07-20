@@ -69,6 +69,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kirodev.notasapp.LocalDarkMode
 import com.kirodev.notasapp.NotesViewModel
 import com.kirodev.notasapp.util.Preferences
 
@@ -77,6 +78,7 @@ import com.kirodev.notasapp.util.Preferences
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings(ctx: Context, navController: NavController) {
+    val darkModeState = LocalDarkMode.current
     var showRestartConfirmation by rememberSaveable { mutableStateOf(false) }
     var isDarkMode by remember { mutableStateOf(Preferences(ctx).obtenerBoolean("dark", false)) }
 
@@ -103,24 +105,24 @@ fun Settings(ctx: Context, navController: NavController) {
                         Column {
                             SwitchWithLabel(
                                 label = "Modo Oscuro",
-                                state = isDarkMode,
+                                state = darkModeState.value,
                                 onStateChange = { newState ->
-                                    isDarkMode = newState
+                                    darkModeState.value = newState
                                     Preferences(ctx).guardarBoolean("dark", newState)
-                                    showRestartConfirmation = true
+
                                 }
                             )
 
                         }
-                        if (showRestartConfirmation) {
-                            ShowRestartDialog(
-                                onConfirm = {
-                                    restartApp(ctx)
-                                    showRestartConfirmation = false
-                                },
-                                onCancel = { showRestartConfirmation = false }
-                            )
-                        }
+//                        if (showRestartConfirmation) {
+//                            ShowRestartDialog(
+//                                onConfirm = {
+//                                    restartApp(ctx)
+//                                    showRestartConfirmation = false
+//                                },
+//                                onCancel = { showRestartConfirmation = false }
+//                            )
+//                        }
                     }
                 }
             )

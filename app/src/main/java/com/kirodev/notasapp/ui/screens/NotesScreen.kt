@@ -3,7 +3,9 @@ package com.kirodev.notasapp.ui.screens
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kirodev.notasapp.NotesViewModel
@@ -55,7 +58,10 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                     }
                     DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        offset = DpOffset(x = (-10).dp, y = 0.dp)
                     ) {
                         DropdownMenuItem(
                             text = { Text("Configuración") },
