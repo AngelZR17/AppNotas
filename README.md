@@ -3,7 +3,5 @@
   <h1>NotasApp 📓</h1>
   <p>Developed by <a href="https://github.com/AngelZR17">AngelZR17</a></p>
 </div>
-
 ___
-
 ## 🖼️ Screenshots
