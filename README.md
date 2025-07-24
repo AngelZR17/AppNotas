@@ -10,10 +10,10 @@ ___
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/AngelZR17/AppNotas.git
-3. Ábrirlo con Android Studio.
+3. Ábrelo en Android Studio.
 4. Conecta un dispositivo o emulador y ejecuta la app.
 
-O bien descarga una version de lanzamiento para instalar el apk directamente en tu dispositivo
+O bien descarga una version release (proximamente) para instalar el apk directamente en tu dispositivo android
 ___
 ## 🖼️ Screenshots
 ### Notas
