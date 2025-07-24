@@ -6,3 +6,5 @@
 
 ___
 ## 🖼️ Screenshots
+
+<img src="screenshots/01.jpg" width="200"/>
