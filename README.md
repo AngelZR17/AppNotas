@@ -5,6 +5,13 @@
 </div>
 
 ___
+
+## 📲 Instalación
+1. Clona el repositorio: git clone https://github.com/AngelZR17/AppNotas.git
+2. Ábrirlo con Android Studio.
+3. Conecta un dispositivo o emulador y ejecuta la app.
+
+___
 ## 🖼️ Screenshots
 ### Notas
 <p align="center">
