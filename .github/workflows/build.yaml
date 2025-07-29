@@ -24,13 +24,13 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v3
 
-    - name: Build APK with Gradle
+    - name: Build Debug APK (signed automatically)
       run: |
         chmod +x gradlew
-        ./gradlew build
+        ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-apk
-        path: app/build/outputs/apk/**/*.apk
+        path: app/build/outputs/apk/debug/*.apk
