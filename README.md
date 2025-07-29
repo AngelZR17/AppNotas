@@ -13,7 +13,7 @@ ___
 2. Open it in Android Studio.
 3. Connect a device or emulator and run the app.
 
-Or download a release version (coming soon) to install the APK directly on your Android device.
+Or download a release version https://github.com/AngelZR17/AppNotas/releases/tag/v0.0.1-beta to install the APK directly on your Android device.
 ___
 ## 🖼️ Screenshots
 ### Notes
