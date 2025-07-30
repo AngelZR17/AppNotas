@@ -79,8 +79,6 @@ import com.kirodev.notasapp.util.Preferences
 @Composable
 fun Settings(ctx: Context, navController: NavController) {
     val darkModeState = LocalDarkMode.current
-    var showRestartConfirmation by rememberSaveable { mutableStateOf(false) }
-    var isDarkMode by remember { mutableStateOf(Preferences(ctx).obtenerBoolean("dark", false)) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -109,20 +107,9 @@ fun Settings(ctx: Context, navController: NavController) {
                                 onStateChange = { newState ->
                                     darkModeState.value = newState
                                     Preferences(ctx).guardarBoolean("dark", newState)
-
                                 }
                             )
-
                         }
-//                        if (showRestartConfirmation) {
-//                            ShowRestartDialog(
-//                                onConfirm = {
-//                                    restartApp(ctx)
-//                                    showRestartConfirmation = false
-//                                },
-//                                onCancel = { showRestartConfirmation = false }
-//                            )
-//                        }
                     }
                 }
             )
@@ -155,62 +142,50 @@ private fun SwitchWithLabel(label: String, state: Boolean, onStateChange: (Boole
                 checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                 uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
                 uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            thumbContent = if (state) {
-                {
-                    Icon(
-                        imageVector = Icons.Filled.DarkMode,
-                        contentDescription = null,
-                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                        tint = Color.Black
-                    )
-                }
-            } else {
-                null
-            }
+            )
         )
     }
 }
 
-@Composable
-private fun ShowRestartDialog(
-    onConfirm: () -> Unit,
-    onCancel: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onCancel,
-        containerColor = MaterialTheme.colorScheme.background,
-        title = { Text("Reiniciar aplicación") },
-        text = { Text("¿Deseas reiniciar la aplicación para aplicar los cambios?") },
-        dismissButton = {
-            TextButton(onClick = onCancel) {
-                Text(text = "Cancelar", color = MaterialTheme.colorScheme.onPrimaryContainer)
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(text = "Reiniciar", color = MaterialTheme.colorScheme.onTertiaryContainer)
-            }
-        }
-    )
-}
-
-private fun restartApp(ctx: Context) {
-    val intent = ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)
-
-    if (intent != null) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        ctx.startActivity(intent)
-
-        if (ctx is Activity) {
-            ctx.finish()
-        }
-
-        android.os.Process.killProcess(android.os.Process.myPid())
-    } else {
-        Log.e("RestartApp", "No se pudo obtener el intent de lanzamiento para el paquete: ${ctx.packageName}")
-    }
-}
+//@Composable
+//private fun ShowRestartDialog(
+//    onConfirm: () -> Unit,
+//    onCancel: () -> Unit
+//) {
+//    AlertDialog(
+//        onDismissRequest = onCancel,
+//        containerColor = MaterialTheme.colorScheme.background,
+//        title = { Text("Reiniciar aplicación") },
+//        text = { Text("¿Deseas reiniciar la aplicación para aplicar los cambios?") },
+//        dismissButton = {
+//            TextButton(onClick = onCancel) {
+//                Text(text = "Cancelar", color = MaterialTheme.colorScheme.onPrimaryContainer)
+//            }
+//        },
+//        confirmButton = {
+//            TextButton(onClick = onConfirm) {
+//                Text(text = "Reiniciar", color = MaterialTheme.colorScheme.onTertiaryContainer)
+//            }
+//        }
+//    )
+//}
+//
+//private fun restartApp(ctx: Context) {
+//    val intent = ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)
+//
+//    if (intent != null) {
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+//        ctx.startActivity(intent)
+//
+//        if (ctx is Activity) {
+//            ctx.finish()
+//        }
+//
+//        android.os.Process.killProcess(android.os.Process.myPid())
+//    } else {
+//        Log.e("RestartApp", "No se pudo obtener el intent de lanzamiento para el paquete: ${ctx.packageName}")
+//    }
+//}
 
 //@Composable
 //fun DrawingScreen() {
