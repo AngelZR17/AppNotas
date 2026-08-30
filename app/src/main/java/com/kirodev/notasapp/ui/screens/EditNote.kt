@@ -213,7 +213,6 @@ fun EditNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: 
                                 placeholder = { Text("Descripción") }
                             )
                             Spacer(modifier = Modifier.height(3.dp))
-                            Text("Imágenes: ${urisPhotos.size}")
                             LazyVerticalGrid(
                                 modifier = Modifier.padding(top = 0.dp, start = 0.dp),
                                 contentPadding = PaddingValues(0.dp),
