@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.kirodev.notasapp.NotesViewModel
 import com.kirodev.notasapp.TaskViewModel
+import com.kirodev.notasapp.ui.screens.About
 import com.kirodev.notasapp.ui.screens.AddNoteScreen
 import com.kirodev.notasapp.ui.screens.EditNoteScreen
 import com.kirodev.notasapp.ui.screens.FavoritesScreen
@@ -66,6 +67,9 @@ fun Navigation(
         }
         composable(route = AppScreens.Settings.route) {
             Settings(ctx, navController)
+        }
+        composable(route = AppScreens.AboutScreen.route) {
+            About(ctx, navController)
         }
     }
 }

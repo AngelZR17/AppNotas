@@ -68,15 +68,11 @@ fun NotesScreen(notes: List<Notes>, notesViewModel: NotesViewModel, ctx: Context
                             leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                             onClick = { navController.navigate(AppScreens.Settings.route) }
                         )
-                        DropdownMenuItem(
-                            text = { Text("Option 2") },
-                            onClick = { /* Do something... */ }
-                        )
                         HorizontalDivider()
                         DropdownMenuItem(
                             text = { Text("About") },
                             leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { navController.navigate(AppScreens.AboutScreen.route) }
                         )
                         DropdownMenuItem(
                             text = { Text("Help") },

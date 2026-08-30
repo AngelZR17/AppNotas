@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.kirodev.notasapp.TaskViewModel
@@ -66,27 +67,21 @@ fun TaskScreen(tasks: List<Tasks>, taskViewModel: TaskViewModel, ctx: Context, n
                     }
                     DropdownMenu(
                         expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        onDismissRequest = { expanded = false },
+                        shape = RoundedCornerShape(10.dp),
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        offset = DpOffset(x = (-10).dp, y = 0.dp)
                     ) {
                         DropdownMenuItem(
                             text = { Text("Configuración") },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Filled.Settings,
-                                    contentDescription = null
-                                )
-                            },
+                            leadingIcon = { Icon(Icons.Filled.Settings, contentDescription = null)},
                             onClick = { navController.navigate(AppScreens.Settings.route) }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Option 2") },
-                            onClick = { /* Do something... */ }
                         )
                         HorizontalDivider()
                         DropdownMenuItem(
                             text = { Text("About") },
                             leadingIcon = { Icon(Icons.Outlined.Info, contentDescription = null) },
-                            onClick = { /* Do something... */ }
+                            onClick = { navController.navigate(AppScreens.AboutScreen.route) }
                         )
                         DropdownMenuItem(
                             text = { Text("Help") },
@@ -315,7 +310,7 @@ private fun TaskBottomSheetContent(
         )
     }
     Row(
-        modifier = Modifier.padding(bottom = 10.dp, start = 35.dp)
+        modifier = Modifier.padding(bottom = 10.dp, start = 30.dp)
     ) {
         Button(
             modifier = Modifier.padding(),
@@ -323,7 +318,7 @@ private fun TaskBottomSheetContent(
             colors = ButtonDefaults.buttonColors( MaterialTheme.colorScheme.secondaryContainer)
         ) {
             Icon(
-                modifier = Modifier.padding(end = 10.dp),
+                modifier = Modifier.padding(end = 5.dp),
                 imageVector = Icons.Filled.Notifications,
                 contentDescription = "Icono de recordatorio",
                 tint = MaterialTheme.colorScheme.onSecondaryContainer
@@ -331,21 +326,20 @@ private fun TaskBottomSheetContent(
             Text("Recordatorio")
         }
         Button(
-            modifier = Modifier.padding(start = 10.dp),
+            modifier = Modifier.padding(start = 5.dp),
             onClick = onActionClick,
             enabled = currentTitle.isNotBlank(),
-            colors = ButtonDefaults.buttonColors( MaterialTheme.colorScheme.secondaryContainer)
+            colors = ButtonDefaults.buttonColors( MaterialTheme.colorScheme.tertiaryContainer)
         ) {
             Icon(
                 imageVector = Icons.Filled.Check,
                 contentDescription = "Icono de agregar",
-                modifier = Modifier.padding(end = 10.dp),
+                modifier = Modifier.padding(end = 5.dp),
                 tint = MaterialTheme.colorScheme.onSecondaryContainer
             )
             Text(
                 text = if (isEditing) "Editar Tarea" else "Agregar Tarea",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
+
             )
         }
     }

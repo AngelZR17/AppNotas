@@ -2,6 +2,7 @@ package com.kirodev.notasapp.ui.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -104,7 +105,12 @@ fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: N
         contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
         if (uri != null) {
-            urisPhotos = urisPhotos.plus(uri!!.toString()+"|IMG")
+            // Otorgar permiso de lectura permanente
+            ctx.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            urisPhotos = urisPhotos.plus(uri.toString() + "|IMG")
         }
     }
 
@@ -203,6 +209,7 @@ fun AddNoteScreen(notesViewModel: NotesViewModel, ctx: Context, navController: N
                             )
 
                             Spacer(modifier = Modifier.height(3.dp))
+                            Text("Imágenes: ${urisPhotos.size}")
                             LazyVerticalGrid(
                                 modifier = Modifier.padding(top = 0.dp, start = 0.dp),
                                 contentPadding = PaddingValues(0.dp),
